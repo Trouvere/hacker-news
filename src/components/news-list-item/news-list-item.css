@@ -1,0 +1,7 @@
+.news-list .news-list-item {
+  border: 1px solid;
+}
+
+.news-list .news-list-item:hover {
+  background-color: rgb(219, 190, 190);
+}

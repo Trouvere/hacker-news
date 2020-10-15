@@ -1,0 +1,11 @@
+.news-list {
+  margin-bottom: 1rem;
+}
+
+.news-list .news-list-item {
+  cursor: pointer;
+}
+
+.news-list {
+  background-color: #bdb6a2;
+}
