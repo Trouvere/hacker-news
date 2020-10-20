@@ -4,7 +4,7 @@ export default class NewsService {
   async getResource(url) {
     const res = await fetch(`${this._apiBase}${url}`);
     if (!res.ok) {
-      throw new Error(`Could not fetch ${url}` + `, received ${res.status}`);
+      throw new Error(`Could not fetch ${url} , received ${res.status}`);
     }
     return await res.json();
   }
@@ -12,7 +12,7 @@ export default class NewsService {
   async getIDBestNews() {
     const res = await this.getResource(`/v0/topstories.json`);
 
-    console.log(res);
+    // console.log(res);
     return res;
   }
 
