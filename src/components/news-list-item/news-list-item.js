@@ -1,16 +1,40 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./news-list-item.css";
 
-const NewsListItem = ({ news }) => {
-  const { title, type, url, time } = news;
+import NewsService from "../../services/news-service";
+import Spinner from "../spinner/spinner";
 
+const newsService = new NewsService();
+
+const NewsListItem = ({ newsID }) => {
+  const [news, setnews] = useState(null);
+  const [loading, setloading] = useState(false);
+  useEffect(() => {
+    newsService.getNews(newsID).then((news) => {
+      setnews(news);
+      setloading(true);
+    });
+  }, []);
+
+  if (!loading) {
+    return <Spinner />;
+  }
+
+  const { title, type, url, time } = news;
   return (
     <div className="news-list-item">
-      <div className="book-details">
+      <div className="news-list-details">
         <div className="news-list-item__title">{title}</div>
         <div className="news-list-item__type">{type}</div>
         <div className="news-list-item__time">{time}</div>
-        <a className="news-list-item__url">{url}</a>
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="news-list-item__url"
+        >
+          {url}
+        </a>
       </div>
     </div>
   );

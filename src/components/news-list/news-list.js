@@ -10,41 +10,41 @@ export default class NewsList extends Component {
   newsService = new NewsService();
 
   state = {
-    newsList: null,
+    newsIDBestNews: null,
+    // newsList: null,
   };
 
   componentDidMount() {
-    this.newsService.get20News().then((newsList) => {
+    this.newsService.getIDBestNews().then((data) => {
+      let newsIDBestNews = [];
+      for (let i = 0; i < 20; i++) {
+        newsIDBestNews.push(data[i]);
+      }
+
       this.setState({
-        newsList,
+        newsIDBestNews,
       });
     });
   }
 
   renderItems(arr) {
-    console.log(arr);
     return arr.map((item) => {
-      const { title } = item;
-
       return (
-        <div className="book-list-li">
-          <NewsListItem news={item} />
+        <div key={item} className="news-list-li">
+          <NewsListItem newsID={item} />
         </div>
       );
     });
   }
 
   render() {
-    const { newsList } = this.state;
+    const { newsIDBestNews } = this.state;
 
-    if (!newsList) {
+    if (!newsIDBestNews) {
       return <Spinner />;
     }
 
-    // if (!newsList) {
-    //   return <h1> Download</h1>;
-    // }
-    const items = this.renderItems(newsList);
+    const items = this.renderItems(newsIDBestNews);
 
     return <ul className="news-list list-group">{items}</ul>;
   }

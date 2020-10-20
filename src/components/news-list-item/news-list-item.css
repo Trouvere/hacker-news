@@ -1,5 +1,6 @@
 .news-list .news-list-item {
   border: 1px solid;
+  /* height: 20px; */
 }
 
 .news-list .news-list-item:hover {
