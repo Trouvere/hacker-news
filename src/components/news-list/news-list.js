@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
 
 import NewsService from "../../services/news-service";
 import NewsListItem from "../news-list-item";
@@ -6,28 +6,24 @@ import "./news-list.css";
 
 import Spinner from "../spinner/spinner";
 
-export default class NewsList extends Component {
-  newsService = new NewsService();
+const newsService = new NewsService();
 
-  state = {
-    newsIDBestNews: null,
-    // newsList: null,
-  };
-
-  componentDidMount() {
-    this.newsService.getIDBestNews().then((data) => {
+const NewsList = () => {
+  const [newsIDBestNews, setnewsIDBestNews] = useState([]);
+  const [loading, setloading] = useState(false);
+  useEffect(() => {
+    newsService.getIDBestNews().then((data) => {
       let newsIDBestNews = [];
       for (let i = 0; i < 20; i++) {
         newsIDBestNews.push(data[i]);
       }
 
-      this.setState({
-        newsIDBestNews,
-      });
+      setnewsIDBestNews(newsIDBestNews);
+      setloading(true);
     });
-  }
+  }, []);
 
-  renderItems(arr) {
+  const renderItems = (arr) => {
     return arr.map((item) => {
       return (
         <div key={item} className="news-list-li">
@@ -35,17 +31,15 @@ export default class NewsList extends Component {
         </div>
       );
     });
+  };
+
+  if (!loading) {
+    return <Spinner />;
   }
 
-  render() {
-    const { newsIDBestNews } = this.state;
+  const items = renderItems(newsIDBestNews);
 
-    if (!newsIDBestNews) {
-      return <Spinner />;
-    }
+  return <ul className="news-list list-group">{items}</ul>;
+};
 
-    const items = this.renderItems(newsIDBestNews);
-
-    return <ul className="news-list list-group">{items}</ul>;
-  }
-}
+export default NewsList;
