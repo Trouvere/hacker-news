@@ -12,21 +12,28 @@ const NewsList = () => {
   const [newsIDBestNews, setnewsIDBestNews] = useState([]);
   const [loading, setloading] = useState(false);
   const [firstItemOnPage, setfirstItemOnPage] = useState(0);
+  const [maxIDBestNews, setMaxIDBestNews] = useState(0);
+
+  const maxIDBestNewsOnPage =
+    firstItemOnPage + 20 >= maxIDBestNews
+      ? maxIDBestNews
+      : firstItemOnPage + 20;
 
   useEffect(() => {
     newsService.getIDBestNews().then((data) => {
-      let newsIDBestNews = [];
-      for (let i = 0; i < 20; i++) {
-        newsIDBestNews.push(data[i]);
-      }
-
-      setnewsIDBestNews(newsIDBestNews);
+      console.log(data);
+      setnewsIDBestNews(data);
+      setMaxIDBestNews(data.length);
       setloading(true);
     });
   }, []);
 
   const renderItems = (arr) => {
-    return arr.map((item) => {
+    let newsID20BestNews = [];
+    for (let i = firstItemOnPage; i < maxIDBestNewsOnPage; i++) {
+      newsID20BestNews.push(arr[i]);
+    }
+    return newsID20BestNews.map((item) => {
       return (
         <div key={item} className="news-list-li">
           <NewsListItem newsID={item} />
@@ -35,8 +42,12 @@ const NewsList = () => {
     });
   };
   // ?????????обновление состояния зависящего от старого состояния в хуках
+  //    this.setState(({ todoData }) => {
+  //   return {
+  //     todoData: this.toggleProperty(todoData, id, 'important')
+  //   };
+  // });
   const onChangefirstItemOnPage = (name) => {
-    // console.log(name);
     let page;
     if (name === "previous") {
       page = firstItemOnPage - 20;
@@ -44,7 +55,6 @@ const NewsList = () => {
       page = firstItemOnPage + 20;
     }
     setfirstItemOnPage(page);
-    // console.log(firstItemOnPage);
   };
 
   if (!loading) {
@@ -57,6 +67,8 @@ const NewsList = () => {
     <>
       <Pagination
         firstItemOnPage={firstItemOnPage}
+        maxIDBestNewsOnPage={maxIDBestNewsOnPage}
+        maxIDBestNews={maxIDBestNews}
         onChangefirstItemOnPage={onChangefirstItemOnPage}
       />
       <ul className="news-list list-group">{items}</ul>
