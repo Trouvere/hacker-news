@@ -1,1 +1,1 @@
-https://elegant-brattain-45cb23.netlify.app/
+https://trouvere-hacker-news.netlify.app/
