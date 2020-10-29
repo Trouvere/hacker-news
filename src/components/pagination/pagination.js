@@ -3,34 +3,28 @@ import React from "react";
 import "./pagination";
 
 const Pagination = ({
-  firstItemOnPage,
-  maxIDBestNewsOnPage,
-  maxIDBestNews,
-  onChangefirstItemOnPage = () => {},
+  onPreviousPage = () => {},
+  onNextPage = () => {},
+  currentPage,
+  maxNumberPage,
 }) => {
-  const namePrevious = "previous";
-  const nameNext = "next";
-
   return (
     <div className="btn-group">
       <button
         key="previous"
         type="button"
-        onClick={() => onChangefirstItemOnPage(namePrevious)}
-        disabled={firstItemOnPage <= 0 ? "disabled" : ""}
+        onClick={() => onPreviousPage()}
+        disabled={currentPage > 0 ? "" : "disabled"}
         className="btn btn-info"
       >
         Previous
       </button>
-      <div>
-        {" "}
-        {firstItemOnPage + 1}-{maxIDBestNewsOnPage}{" "}
-      </div>
+      <div>{currentPage + 1}</div>
       <button
         key="next"
         type="button"
-        onClick={() => onChangefirstItemOnPage(nameNext)}
-        disabled={firstItemOnPage + 20 >= maxIDBestNews ? "disabled" : ""}
+        onClick={() => onNextPage()}
+        disabled={currentPage >= maxNumberPage ? "disabled" : ""}
         className="btn btn-outline-secondary"
       >
         Next

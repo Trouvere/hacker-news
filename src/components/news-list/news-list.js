@@ -1,77 +1,60 @@
 import React, { useEffect, useState } from "react";
 
-import NewsService from "../../services/news-service";
+import { getIDBestNews } from "../../services/news-service";
 import NewsListItem from "../news-list-item";
 import "./news-list.css";
 
 import Spinner from "../spinner/spinner";
 import Pagination from "../pagination";
-const newsService = new NewsService();
 
 const NewsList = () => {
   const [newsIDBestNews, setnewsIDBestNews] = useState([]);
   const [loading, setloading] = useState(false);
-  const [firstItemOnPage, setfirstItemOnPage] = useState(0);
-  const [maxIDBestNews, setMaxIDBestNews] = useState(0);
+  const [maxNumberPage, setmaxNumberPage] = useState(101);
+  const itemsPerPage = 20;
+  const [currentPage, setCurrentPage] = useState(0);
+  const onPreviousPage = () => setCurrentPage((page) => page - 1);
+  const onNextPage = () => setCurrentPage((page) => page + 1);
+  const [itemsToShow, setItemsToShow] = useState([]);
 
-  const maxIDBestNewsOnPage =
-    firstItemOnPage + 20 >= maxIDBestNews
-      ? maxIDBestNews
-      : firstItemOnPage + 20;
-
+  // getIDBestNews
   useEffect(() => {
-    newsService.getIDBestNews().then((data) => {
+    getIDBestNews().then((data) => {
       console.log(data);
       setnewsIDBestNews(data);
-      setMaxIDBestNews(data.length);
+      setmaxNumberPage(Math.ceil(499 / itemsPerPage) - 1);
       setloading(true);
     });
   }, []);
 
-  const renderItems = (arr) => {
-    let newsID20BestNews = [];
-    for (let i = firstItemOnPage; i < maxIDBestNewsOnPage; i++) {
-      newsID20BestNews.push(arr[i]);
-    }
-    return newsID20BestNews.map((item) => {
-      return (
-        <div key={item} className="news-list-li">
-          <NewsListItem newsID={item} />
-        </div>
-      );
-    });
-  };
-  // ?????????обновление состояния зависящего от старого состояния в хуках
-  //    this.setState(({ todoData }) => {
-  //   return {
-  //     todoData: this.toggleProperty(todoData, id, 'important')
-  //   };
-  // });
-  const onChangefirstItemOnPage = (name) => {
-    let page;
-    if (name === "previous") {
-      page = firstItemOnPage - 20;
-    } else if (name === "next") {
-      page = firstItemOnPage + 20;
-    }
-    setfirstItemOnPage(page);
-  };
+  // Update items to show if page changed or newsIDBestNews updated
+  useEffect(() => {
+    const startIndex = currentPage * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    setItemsToShow(newsIDBestNews.slice(startIndex, endIndex));
+  }, [newsIDBestNews, currentPage, setItemsToShow]);
 
+  // render
   if (!loading) {
     return <Spinner />;
   }
 
-  const items = renderItems(newsIDBestNews);
-
   return (
     <>
       <Pagination
-        firstItemOnPage={firstItemOnPage}
-        maxIDBestNewsOnPage={maxIDBestNewsOnPage}
-        maxIDBestNews={maxIDBestNews}
-        onChangefirstItemOnPage={onChangefirstItemOnPage}
+        onPreviousPage={onPreviousPage}
+        onNextPage={onNextPage}
+        currentPage={currentPage}
+        maxNumberPage={maxNumberPage}
+        // onChangefirstItemOnPage={onChangefirstItemOnPage}
       />
-      <ul className="news-list list-group">{items}</ul>
+      <ul className="news-list list-group">
+        {itemsToShow.map((id) => (
+          <div key={id} className="news-list-li">
+            <NewsListItem newsID={id} />
+          </div>
+        ))}
+      </ul>
     </>
   );
 };
