@@ -24,9 +24,8 @@ const NewsListItem = ({ newsID }) => {
     }
     return function cleanup() {
       cancelled = true;
+      setloading(false);
       controller.abort();
-      controller = null;
-      signal = null;
     };
   }, [newsID]);
 

@@ -12,7 +12,7 @@ const getResource = async (url, signal) => {
     return await res.json();
   } catch (err) {
     if (err.name === "AbortError") {
-      console.log("Request took more than 5 seconds. Automatically cancelled.");
+      console.log("Request Abort. Automatically cancelled.");
       return;
     }
     return err;
