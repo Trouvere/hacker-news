@@ -1,14 +1,24 @@
 // export default class NewsService {
 const _apiBase = "https://hacker-news.firebaseio.com/";
 
-const getResource = async (url) => {
-  const res = await fetch(`${_apiBase}${url}`);
-  if (!res.ok) {
-    throw new Error(`Could not fetch ${url} , received ${res.status}`);
+const getResource = async (url, signal) => {
+  try {
+    const res = await fetch(`${_apiBase}${url}`, {
+      signal: signal,
+    });
+    if (!res.ok) {
+      throw new Error(`Could not fetch ${url} , received ${res.status}`);
+    }
+    return await res.json();
+  } catch (err) {
+    if (err.name === "AbortError") {
+      console.log("Request took more than 5 seconds. Automatically cancelled.");
+      return;
+    }
+    return err;
+    // console.log("000" + e);
   }
-  return await res.json();
 };
-
 export const getIDBestNews = async () => {
   const res = await getResource(`/v0/topstories.json`);
 
@@ -16,8 +26,8 @@ export const getIDBestNews = async () => {
   return res;
 };
 
-export const getNews = async (id) => {
-  const res = await getResource(`/v0/item/${id}.json`);
+export const getNews = async (id, signal) => {
+  const res = await getResource(`/v0/item/${id}.json`, signal);
 
   return res;
 };

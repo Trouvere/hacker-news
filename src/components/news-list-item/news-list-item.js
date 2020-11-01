@@ -7,11 +7,27 @@ import Spinner from "../spinner/spinner";
 const NewsListItem = ({ newsID }) => {
   const [news, setnews] = useState(null);
   const [loading, setloading] = useState(false);
+
   useEffect(() => {
-    getNews(newsID).then((news) => {
-      setnews(news);
-      setloading(true);
-    });
+    let cancelled = false;
+    let controller;
+    let signal;
+
+    if (!cancelled) {
+      controller = new AbortController();
+      signal = controller.signal;
+      getNews(newsID, signal).then((news) => {
+        // console.log(news);
+        setnews(news);
+        setloading(true);
+      });
+    }
+    return function cleanup() {
+      cancelled = true;
+      controller.abort();
+      controller = null;
+      signal = null;
+    };
   }, [newsID]);
 
   if (!loading) {
