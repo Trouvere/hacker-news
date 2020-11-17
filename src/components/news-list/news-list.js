@@ -8,9 +8,9 @@ import Spinner from "../spinner/spinner";
 import Pagination from "../pagination";
 
 const NewsList = () => {
-  const [newsIDBestNews, setnewsIDBestNews] = useState([]);
-  const [loading, setloading] = useState(false);
-  const [maxNumberPage, setmaxNumberPage] = useState(101);
+  const [newsIDBestNews, setNewsIDBestNews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [maxNumberPage, setMaxNumberPage] = useState(101);
   const itemsPerPage = 20;
   const [currentPage, setCurrentPage] = useState(0);
   const onPreviousPage = () => setCurrentPage((page) => page - 1);
@@ -21,9 +21,9 @@ const NewsList = () => {
   useEffect(() => {
     getIDBestNews().then((data) => {
       console.log(data);
-      setnewsIDBestNews(data);
-      setmaxNumberPage(Math.ceil(499 / itemsPerPage) - 1);
-      setloading(true);
+      setNewsIDBestNews(data);
+      setMaxNumberPage(Math.ceil(499 / itemsPerPage) - 1);
+      setLoading(false);
     });
   }, []);
 
@@ -35,7 +35,7 @@ const NewsList = () => {
   }, [newsIDBestNews, currentPage, setItemsToShow]);
 
   // render
-  if (!loading) {
+  if (loading) {
     return <Spinner />;
   }
 
