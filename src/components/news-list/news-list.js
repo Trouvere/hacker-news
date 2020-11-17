@@ -1,51 +1,62 @@
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
 
-import NewsService from "../../services/news-service";
+import { getIDBestNews } from "../../services/news-service";
 import NewsListItem from "../news-list-item";
 import "./news-list.css";
 
-// import Spinner from "../spinner/spinner";
+import Spinner from "../spinner/spinner";
+import Pagination from "../pagination";
 
-export default class NewsList extends Component {
-  newsService = new NewsService();
+const NewsList = () => {
+  const [newsIDBestNews, setNewsIDBestNews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [maxNumberPage, setMaxNumberPage] = useState(101);
+  const itemsPerPage = 20;
+  const [currentPage, setCurrentPage] = useState(0);
+  const onPreviousPage = () => setCurrentPage((page) => page - 1);
+  const onNextPage = () => setCurrentPage((page) => page + 1);
+  const [itemsToShow, setItemsToShow] = useState([]);
 
-  state = {
-    newsList: null,
-  };
-
-  componentDidMount() {
-    this.newsService.get20News().then((newsList) => {
-      this.setState({
-        newsList,
-      });
+  // getIDBestNews
+  useEffect(() => {
+    getIDBestNews().then((data) => {
+      console.log(data);
+      setNewsIDBestNews(data);
+      setMaxNumberPage(Math.ceil(499 / itemsPerPage) - 1);
+      setLoading(false);
     });
+  }, []);
+
+  // Update items to show if page changed or newsIDBestNews updated
+  useEffect(() => {
+    const startIndex = currentPage * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    setItemsToShow(newsIDBestNews.slice(startIndex, endIndex));
+  }, [newsIDBestNews, currentPage, setItemsToShow]);
+
+  // render
+  if (loading) {
+    return <Spinner />;
   }
 
-  renderItems(arr) {
-    console.log(arr);
-    return arr.map((item) => {
-      const { title } = item;
+  return (
+    <>
+      <Pagination
+        onPreviousPage={onPreviousPage}
+        onNextPage={onNextPage}
+        currentPage={currentPage}
+        maxNumberPage={maxNumberPage}
+        // onChangefirstItemOnPage={onChangefirstItemOnPage}
+      />
+      <ul className="news-list list-group">
+        {itemsToShow.map((id) => (
+          <div key={id} className="news-list-li">
+            <NewsListItem newsID={id} />
+          </div>
+        ))}
+      </ul>
+    </>
+  );
+};
 
-      return (
-        <div className="book-list-li">
-          <NewsListItem news={item} />
-        </div>
-      );
-    });
-  }
-
-  render() {
-    const { newsList } = this.state;
-
-    // if (!newsList) {
-    //   return <Spinner />;
-    // }
-
-    if (!newsList) {
-      return <h1> Download</h1>;
-    }
-    const items = this.renderItems(newsList);
-
-    return <ul className="news-list list-group">{items}</ul>;
-  }
-}
+export default NewsList;

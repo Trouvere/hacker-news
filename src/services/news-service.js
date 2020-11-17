@@ -1,33 +1,39 @@
-export default class NewsService {
-  _apiBase = "https://hacker-news.firebaseio.com/";
+const _apiBase = "https://hacker-news.firebaseio.com/";
 
-  async getResource(url) {
-    const res = await fetch(`${this._apiBase}${url}`);
+const getResource = async (url, signal) => {
+  try {
+    const res = await fetch(`${_apiBase}${url}`, {
+      signal: signal,
+    });
     if (!res.ok) {
-      throw new Error(`Could not fetch ${url}` + `, received ${res.status}`);
+      throw new Error(`Could not fetch ${url} , received ${res.status}`);
     }
     return await res.json();
-  }
-
-  async getIDBestNews() {
-    const res = await this.getResource(`/v0/topstories.json`);
-
-    console.log(res);
-    return res;
-  }
-
-  async getNews(id) {
-    const res = await this.getResource(`/v0/item/${id}.json`);
-
-    return res;
-  }
-
-  async get20News() {
-    const IDBestNews = await this.getIDBestNews();
-    const bestNews20 = [];
-    for (let i = 0; i < 20; i++) {
-      bestNews20.push(await this.getNews(IDBestNews[i]));
+  } catch (err) {
+    if (err.name === "AbortError") {
+      console.log("Request Abort. Automatically cancelled.");
+      return err;
     }
-    return bestNews20;
+    throw err;
   }
-}
+};
+export const getIDBestNews = async () => {
+  const res = await getResource(`/v0/topstories.json`);
+
+  return res;
+};
+
+export const getNews = async (id, signal) => {
+  const res = await getResource(`/v0/item/${id}.json`, signal);
+
+  return res;
+};
+
+export const get20News = async () => {
+  const IDBestNews = await getIDBestNews();
+  const bestNews20 = [];
+  for (let i = 0; i < 20; i++) {
+    bestNews20.push(await getNews(IDBestNews[i]));
+  }
+  return bestNews20;
+};
