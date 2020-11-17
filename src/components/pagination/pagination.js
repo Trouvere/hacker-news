@@ -13,7 +13,7 @@ const Pagination = ({
       <button
         key="previous"
         type="button"
-        onClick={() => onPreviousPage()}
+        onClick={onPreviousPage}
         disabled={currentPage > 0 ? "" : "disabled"}
         className="btn btn-info"
       >
@@ -23,7 +23,7 @@ const Pagination = ({
       <button
         key="next"
         type="button"
-        onClick={() => onNextPage()}
+        onClick={onNextPage}
         disabled={currentPage >= maxNumberPage ? "disabled" : ""}
         className="btn btn-outline-secondary"
       >

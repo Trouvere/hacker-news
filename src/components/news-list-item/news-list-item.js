@@ -5,31 +5,32 @@ import { getNews } from "../../services/news-service";
 import Spinner from "../spinner/spinner";
 
 const NewsListItem = ({ newsID }) => {
-  const [news, setnews] = useState(null);
-  const [loading, setloading] = useState(false);
+  const [news, setNews] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
     let controller;
     let signal;
 
-    if (!cancelled) {
-      controller = new AbortController();
-      signal = controller.signal;
-      getNews(newsID, signal).then((news) => {
-        // console.log(news);
-        setnews(news);
-        setloading(true);
-      });
-    }
+    controller = new AbortController();
+    signal = controller.signal;
+    getNews(newsID, signal).then((news) => {
+      if (!cancelled) {
+        setNews(news);
+
+        setLoading(false);
+      }
+    });
+
     return function cleanup() {
       cancelled = true;
-      setloading(false);
+
       controller.abort();
     };
   }, [newsID]);
 
-  if (!loading) {
+  if (loading) {
     return <Spinner />;
   }
 

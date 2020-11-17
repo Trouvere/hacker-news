@@ -1,4 +1,3 @@
-// export default class NewsService {
 const _apiBase = "https://hacker-news.firebaseio.com/";
 
 const getResource = async (url, signal) => {
@@ -13,16 +12,14 @@ const getResource = async (url, signal) => {
   } catch (err) {
     if (err.name === "AbortError") {
       console.log("Request Abort. Automatically cancelled.");
-      return;
+      return err;
     }
-    return err;
-    // console.log("000" + e);
+    throw err;
   }
 };
 export const getIDBestNews = async () => {
   const res = await getResource(`/v0/topstories.json`);
 
-  // console.log(res);
   return res;
 };
 
@@ -40,4 +37,3 @@ export const get20News = async () => {
   }
   return bestNews20;
 };
-// }
